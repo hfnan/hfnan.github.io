@@ -11,5 +11,13 @@
     <guid>https://example.com/tags/tools/</guid>
     <description><![CDATA[]]></description>
 </item>
+<item>
+    <title>Distruibuted Training</title>
+    <link>https://example.com/tags/distruibuted-training/</link>
+    <pubDate>Mon, 13 Jan 2025 12:38:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/tags/distruibuted-training/</guid>
+    <description><![CDATA[]]></description>
+</item>
 </channel>
 </rss>

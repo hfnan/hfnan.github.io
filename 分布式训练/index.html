@@ -9,7 +9,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://example.com/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" /><meta property="og:image" content="https://example.com/logo.png" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2025-01-13T12:38:00+08:00" />
-<meta property="article:modified_time" content="2025-01-13T12:38:00+08:00" /><meta property="og:site_name" content="Hfnan&#39;s Wiki" />
+<meta property="article:modified_time" content="2025-01-14T21:00:00+08:00" /><meta property="og:site_name" content="Hfnan&#39;s Wiki" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="https://example.com/logo.png" /><meta name="twitter:title" content="分布式训练"/>
@@ -28,8 +28,8 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/example.com\/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83\/"
-        },"image": ["https:\/\/example.com\/images\/Apple-Devices-Preview.png"],"genre": "posts","wordcount":  1308 ,
-        "url": "https:\/\/example.com\/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83\/","datePublished": "2025-01-13T12:38:00+08:00","dateModified": "2025-01-13T12:38:00+08:00","publisher": {
+        },"image": ["https:\/\/example.com\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "distruibuted training","wordcount":  1582 ,
+        "url": "https:\/\/example.com\/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83\/","datePublished": "2025-01-13T12:38:00+08:00","dateModified": "2025-01-14T21:00:00+08:00","publisher": {
             "@type": "Organization",
             "name": "xxxx","logo": "https:\/\/example.com\/images\/avatar.png"},"author": {
                 "@type": "Person",
@@ -102,8 +102,8 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">分布式训练</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>hfnan</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-13">2025-01-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1308 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-13">2025-01-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1582 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  data-kept="">
                 <div class="details-summary toc-title">
                     <span>目录</span>
@@ -116,7 +116,7 @@
         <li><a href="#11-深度神经网络">1.1 深度神经网络</a></li>
         <li><a href="#12-前向传播">1.2 前向传播</a></li>
         <li><a href="#13-反向传播">1.3 反向传播</a></li>
-        <li><a href="#1x-参考">1.x 参考</a></li>
+        <li><a href="#1x-参考">1.X 参考</a></li>
       </ul>
     </li>
     <li><a href="#2-分布式训练">2 分布式训练</a>
@@ -128,11 +128,15 @@
                 <li><a href="#数据并行的优缺点">数据并行的优缺点</a></li>
               </ul>
             </li>
-            <li><a href="#212-张量并行tp">2.1.2 张量并行（TP）</a></li>
+            <li><a href="#212-张量并行tp">2.1.2 张量并行（TP）</a>
+              <ul>
+                <li><a href="#张量并行优缺点">张量并行优缺点</a></li>
+              </ul>
+            </li>
             <li><a href="#213-流水线并行pp">2.1.3 流水线并行（PP）</a></li>
           </ul>
         </li>
-        <li><a href="#2x-参考">2.x 参考</a></li>
+        <li><a href="#2x-参考">2.X 参考</a></li>
       </ul>
     </li>
   </ul>
@@ -155,7 +159,7 @@ $$\boldsymbol{b = b - \alpha \dfrac{\partial{L}}{\partial{b}}}$$</p>
 <p>注意，在应用链式法则计算权重梯度时，对当前层权重梯度的计算可转化为当前层输出的函数，即：</p>
 <p>$$\boldsymbol{\dfrac{\partial{L}}{\partial{W_l}} = \delta a_l}$$</p>
 <p>所以，反向传播计算依赖于前向传播过程中计算并保存的中间层输出。</p>
-<h3 id="1x-参考">1.x 参考</h3>
+<h3 id="1x-参考">1.X 参考</h3>
 <p><a href="https://scale-py.godaai.org/ch-data-science/deep-learning.html" target="_blank" rel="noopener noreffer ">2.3. 深度学习——Python数据科学加速</a></p>
 <p><a href="https://www.cnblogs.com/charlotte77/p/5629865.html" target="_blank" rel="noopener noreffer ">一文弄懂神经网络中的反向传播法——BackPropagation</a></p>
 <h2 id="2-分布式训练">2 分布式训练</h2>
@@ -163,24 +167,29 @@ $$\boldsymbol{b = b - \alpha \dfrac{\partial{L}}{\partial{b}}}$$</p>
 <p>分布式训练系统的目标就是将单节点模型训练转换成等价的分布式并行模型训练。对于大语言模型来说，训练过程就是根据数据和损失函数，利用优化算法对神经网络模型参数进行更新的过程。</p>
 <h3 id="21-3d并行">2.1 3D并行</h3>
 <h4 id="211-数据并行dp">2.1.1 数据并行（DP）</h4>
-<p>将同样的模型复制到多个计算设备上，每个计算设备都拥有一个模型副本（Model replica）。计算时，每个计算设备处理输入batch的一个子集。假设输入batch size 为N，计算设备数量为M，则每个计算设备会分配到N/M个样本。每个模型副本使用分配到的batch进行前向计算，前向计算完成后，每个计算设备会根据本地的样本计算损失，得到梯度 $\boldsymbol{G_i}$ （ $i$ 为设备编号），并将本地梯度进行广播。所有计算设备需要聚合其他设备的梯度值，计算出平均梯度 $(\sum_{i = 1}^{N}\boldsymbol{G_i}) / N$  来更新参数，完成这个batch的训练。</p>
+<p>将同样的模型复制到多个计算设备上，每个计算设备都拥有一个模型副本（Model replica）。计算时，每个计算设备处理输入batch的一个子集，相当于沿batch维度对训练过程进行并行化。假设输入batch size 为N，计算设备数量为M，则每个计算设备会分配到N/M个样本。</p>
+<p>每个模型副本使用分配到的batch进行前向计算，前向计算完成后，每个计算设备会根据本地的样本计算损失，得到梯度 $\boldsymbol{G_i}$ （ $i$ 为设备编号），并将本地梯度进行广播。所有计算设备需要聚合其他设备的梯度值，计算出平均梯度 $(\sum_{i = 1}^{N}\boldsymbol{G_i}) / N$  来更新参数，完成这个batch的训练。</p>
 <img src="/image-20250114135327933.png" alt="image-20250114135327933" style="zoom:67%;" />
 <p>与单设备训练相比，数据并行训练最主要的区别在于反向计算中的梯度需要在所有计算设备之间同步，以保证每个计算设备上最终得到的是所有模型副本上梯度的平均值。由于基于Transformer架构的大语言模型中<u>每个算子都是依赖单个数据而非整个批次数据</u>，因此，数据并行并不会影响其计算逻辑。一般情况下各计算设备中前向计算是相互独立的，不涉及同步问题。</p>
 <h5 id="数据并行的优缺点">数据并行的优缺点</h5>
 <p>数据并行可以通过增加计算设备数量，提升整体训练吞吐量，提升gbsps（Global Batch Size per Second），具有很高的加速比，但需要在每个计算设备上加载一份模型副本，显存占用较高。</p>
 <h4 id="212-张量并行tp">2.1.2 张量并行（TP）</h4>
-<p>将模型层内参数切分到多个计算设备上进行计算。</p>
+<p>张量并行通过将模型的张量操作分割成多个子操作，并将这些子操作分配到不同的计算设备上，从而实现并行计算。</p>
 <img src="/image-20250114161651511.png" alt="image-20250114161651511" style="zoom:80%;" />
+<h5 id="张量并行优缺点">张量并行优缺点</h5>
+<p>与<u>传统的模型并行</u>相比，张量并行的粒度更细，可以在更高效利用计算资源的同时减少通信开销。</p>
 <h4 id="213-流水线并行pp">2.1.3 流水线并行（PP）</h4>
-<p>将模型的层拆分到多个计算设备上进行计算，每个设备上分得的层称为一个stage。流水线并行需要在计算节点之间通信，将前一个stage的输出作为后一个stage的输入，使得前后stage能够流水式地、分批地进行工作。</p>
+<p>将模型的层拆分到多个计算设备上进行计算，每个设备上分得的层称为一个stage。流水线并行需要在计算节点之间通信，将前一个stage的输出作为后一个stage的输入，使得前后stage能够流水式地、分批地进行工作。流水线并行将模型分成多个stages，每个stage分配到不同的计算设备上，然后将数据以流水线的方式在各个设备之间传递，从而实现并行计算。</p>
 <img src="/image-20250114161547454.png" alt="image-20250114161547454" style="zoom:80%;" />
-<h3 id="2x-参考">2.x 参考</h3>
+<p>每个stage包含模型的一部分层或子模块，<u>输入数据的mini-batches被细分成多个micro-batches，每个micro batch在流水线的一个stage上进行计算，然后依次传递到下一个stage。</u></p>
+<img src="../../../static/image-20240716183434132.png" alt="image-20240716183434132" style="zoom:80%;" />
+<h3 id="2x-参考">2.X 参考</h3>
 <p><a href="https://www.cnblogs.com/huaweiyun/p/18179719" target="_blank" rel="noopener noreffer ">理论+实践，带你了解分布式训练</a></p>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
             <div class="post-info-mod">
-                <span>更新于 2025-01-13</span>
+                <span>更新于 2025-01-14</span>
             </div></div>
         <div class="post-info-line">
             <div class="post-info-md"><span>
@@ -193,7 +202,7 @@ $$\boldsymbol{b = b - \alpha \dfrac{\partial{L}}{\partial{b}}}$$</p>
     </div>
 
     <div class="post-info-more">
-        <section class="post-tags"></section>
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/distruibuted-training/">Distruibuted Training</a></section>
         <section>
             <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
         </section>
