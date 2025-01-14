@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>分布式训练 - Hfnan&#39;s Wiki</title><meta name="Description" content="..."><meta property="og:title" content="分布式训练" />
+<meta property="og:description" content="1 深度神经网络训练过程 1.1 深度神经网络 深度神经网络由若干层堆叠而成，每层由如下式子计算： $$\boldsymbol{z = W \cdot x &#43; b}$$ $$\boldsymbol{a} = f(\boldsymbol{z})$$ 其中，$\boldsymbol{x" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://example.com/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" /><meta property="og:image" content="https://example.com/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-13T12:38:00+08:00" />
+<meta property="article:modified_time" content="2025-01-13T12:38:00+08:00" /><meta property="og:site_name" content="Hfnan&#39;s Wiki" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://example.com/logo.png" /><meta name="twitter:title" content="分布式训练"/>
+<meta name="twitter:description" content="1 深度神经网络训练过程 1.1 深度神经网络 深度神经网络由若干层堆叠而成，每层由如下式子计算： $$\boldsymbol{z = W \cdot x &#43; b}$$ $$\boldsymbol{a} = f(\boldsymbol{z})$$ 其中，$\boldsymbol{x"/>
+<meta name="application-name" content="Hfnan&#39;s Wiki">
+<meta name="apple-mobile-web-app-title" content="Hfnan&#39;s Wiki"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://example.com/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" /><link rel="prev" href="https://example.com/%E6%9E%84%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" /><link rel="next" href="https://example.com/markdown/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "分布式训练",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/example.com\/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83\/"
+        },"image": ["https:\/\/example.com\/images\/Apple-Devices-Preview.png"],"genre": "posts","wordcount":  1308 ,
+        "url": "https:\/\/example.com\/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83\/","datePublished": "2025-01-13T12:38:00+08:00","dateModified": "2025-01-13T12:38:00+08:00","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/example.com\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "hfnan"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Hfnan&#39;s Wiki">Hfnan&#39;s Wiki</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Hfnan&#39;s Wiki">Hfnan&#39;s Wiki</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">分布式训练</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>hfnan</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-13">2025-01-13</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 1308 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-深度神经网络训练过程">1 深度神经网络训练过程</a>
+      <ul>
+        <li><a href="#11-深度神经网络">1.1 深度神经网络</a></li>
+        <li><a href="#12-前向传播">1.2 前向传播</a></li>
+        <li><a href="#13-反向传播">1.3 反向传播</a></li>
+        <li><a href="#1x-参考">1.x 参考</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-分布式训练">2 分布式训练</a>
+      <ul>
+        <li><a href="#21-3d并行">2.1 3D并行</a>
+          <ul>
+            <li><a href="#211-数据并行dp">2.1.1 数据并行（DP）</a>
+              <ul>
+                <li><a href="#数据并行的优缺点">数据并行的优缺点</a></li>
+              </ul>
+            </li>
+            <li><a href="#212-张量并行tp">2.1.2 张量并行（TP）</a></li>
+            <li><a href="#213-流水线并行pp">2.1.3 流水线并行（PP）</a></li>
+          </ul>
+        </li>
+        <li><a href="#2x-参考">2.x 参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="1-深度神经网络训练过程">1 深度神经网络训练过程</h2>
+<h3 id="11-深度神经网络">1.1 深度神经网络</h3>
+<p>深度神经网络由若干层堆叠而成，每层由如下式子计算：</p>
+<p>$$\boldsymbol{z = W \cdot x + b}$$
+$$\boldsymbol{a} = f(\boldsymbol{z})$$</p>
+<p>其中，$\boldsymbol{x}$ 是输入，$\boldsymbol{W}$ 和 $\boldsymbol{b}$ 是权重，$f$ 是激活函数（Activation Function）。</p>
+<h3 id="12-前向传播">1.2 前向传播</h3>
+<p>由输入经过多层神经网络到输出的计算过程。</p>
+<h3 id="13-反向传播">1.3 反向传播</h3>
+<p>从后向前更新各层的权重的过程。</p>
+<p>损失函数（Loss Function）$\boldsymbol{L}$ 计算前向传播的输出值与真实值之间的差距。利用链式法则从后往前计算损失函数对每层权重的偏导数（梯度），并按照如下公式更新权重：</p>
+<p>$$\boldsymbol{W = W - \alpha \dfrac{\partial{L}}{\partial{W}}}$$
+$$\boldsymbol{b = b - \alpha \dfrac{\partial{L}}{\partial{b}}}$$</p>
+<p>其中，$\alpha$ 是学习率，表示权重更新的速度。</p>
+<p>权重沿着梯度方向下降，因此又称为梯度下降法（Gradient decent）。</p>
+<p>注意，在应用链式法则计算权重梯度时，对当前层权重梯度的计算可转化为当前层输出的函数，即：</p>
+<p>$$\boldsymbol{\dfrac{\partial{L}}{\partial{W_l}} = \delta a_l}$$</p>
+<p>所以，反向传播计算依赖于前向传播过程中计算并保存的中间层输出。</p>
+<h3 id="1x-参考">1.x 参考</h3>
+<p><a href="https://scale-py.godaai.org/ch-data-science/deep-learning.html" target="_blank" rel="noopener noreffer ">2.3. 深度学习——Python数据科学加速</a></p>
+<p><a href="https://www.cnblogs.com/charlotte77/p/5629865.html" target="_blank" rel="noopener noreffer ">一文弄懂神经网络中的反向传播法——BackPropagation</a></p>
+<h2 id="2-分布式训练">2 分布式训练</h2>
+<p>分布式训练（Distributed Training）是指将训练任务分解成多个子任务，并在多个计算设备上并行地进行训练。</p>
+<p>分布式训练系统的目标就是将单节点模型训练转换成等价的分布式并行模型训练。对于大语言模型来说，训练过程就是根据数据和损失函数，利用优化算法对神经网络模型参数进行更新的过程。</p>
+<h3 id="21-3d并行">2.1 3D并行</h3>
+<h4 id="211-数据并行dp">2.1.1 数据并行（DP）</h4>
+<p>将同样的模型复制到多个计算设备上，每个计算设备都拥有一个模型副本（Model replica）。计算时，每个计算设备处理输入batch的一个子集。假设输入batch size 为N，计算设备数量为M，则每个计算设备会分配到N/M个样本。每个模型副本使用分配到的batch进行前向计算，前向计算完成后，每个计算设备会根据本地的样本计算损失，得到梯度 $\boldsymbol{G_i}$ （ $i$ 为设备编号），并将本地梯度进行广播。所有计算设备需要聚合其他设备的梯度值，计算出平均梯度 $(\sum_{i = 1}^{N}\boldsymbol{G_i}) / N$  来更新参数，完成这个batch的训练。</p>
+<img src="/image-20250114135327933.png" alt="image-20250114135327933" style="zoom:67%;" />
+<p>与单设备训练相比，数据并行训练最主要的区别在于反向计算中的梯度需要在所有计算设备之间同步，以保证每个计算设备上最终得到的是所有模型副本上梯度的平均值。由于基于Transformer架构的大语言模型中<u>每个算子都是依赖单个数据而非整个批次数据</u>，因此，数据并行并不会影响其计算逻辑。一般情况下各计算设备中前向计算是相互独立的，不涉及同步问题。</p>
+<h5 id="数据并行的优缺点">数据并行的优缺点</h5>
+<p>数据并行可以通过增加计算设备数量，提升整体训练吞吐量，提升gbsps（Global Batch Size per Second），具有很高的加速比，但需要在每个计算设备上加载一份模型副本，显存占用较高。</p>
+<h4 id="212-张量并行tp">2.1.2 张量并行（TP）</h4>
+<p>将模型层内参数切分到多个计算设备上进行计算。</p>
+<img src="/image-20250114161651511.png" alt="image-20250114161651511" style="zoom:80%;" />
+<h4 id="213-流水线并行pp">2.1.3 流水线并行（PP）</h4>
+<p>将模型的层拆分到多个计算设备上进行计算，每个设备上分得的层称为一个stage。流水线并行需要在计算节点之间通信，将前一个stage的输出作为后一个stage的输入，使得前后stage能够流水式地、分批地进行工作。</p>
+<img src="/image-20250114161547454.png" alt="image-20250114161547454" style="zoom:80%;" />
+<h3 id="2x-参考">2.x 参考</h3>
+<p><a href="https://www.cnblogs.com/huaweiyun/p/18179719" target="_blank" rel="noopener noreffer ">理论+实践，带你了解分布式训练</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2025-01-13</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/%E6%9E%84%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" class="prev" rel="prev" title="使用Hugo构建个人博客"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>使用Hugo构建个人博客</a>
+            <a href="/markdown/" class="next" rel="next" title="Markdown">Markdown<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="utterances" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">utterances</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">hfnan</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"utterances":{"darkTheme":"github-dark","issueTerm":"pathname","label":"","lightTheme":"github-light","repo":""}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
