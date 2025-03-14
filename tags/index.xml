@@ -3,7 +3,23 @@
         <title>Tags - 标签 - Hfnan&#39;s Wiki</title>
         <link>https://example.com/tags/</link>
         <description>Tags - 标签 - Hfnan&#39;s Wiki</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 13 Jan 2025 14:09:00 &#43;0800</lastBuildDate><atom:link href="https://example.com/tags/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 08 Mar 2025 11:00:00 &#43;0800</lastBuildDate><atom:link href="https://example.com/tags/" rel="self" type="application/rss+xml" /><item>
+    <title>装机</title>
+    <link>https://example.com/tags/%E8%A3%85%E6%9C%BA/</link>
+    <pubDate>Sat, 08 Mar 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/tags/%E8%A3%85%E6%9C%BA/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
+    <title>Distributed Training</title>
+    <link>https://example.com/tags/distributed-training/</link>
+    <pubDate>Wed, 22 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/tags/distributed-training/</guid>
+    <description><![CDATA[]]></description>
+</item>
+<item>
     <title>Tools</title>
     <link>https://example.com/tags/tools/</link>
     <pubDate>Mon, 13 Jan 2025 14:09:00 &#43;0800</pubDate>
@@ -12,11 +28,11 @@
     <description><![CDATA[]]></description>
 </item>
 <item>
-    <title>Distruibuted Training</title>
-    <link>https://example.com/tags/distruibuted-training/</link>
-    <pubDate>Mon, 13 Jan 2025 12:38:00 &#43;0800</pubDate>
+    <title>Blog</title>
+    <link>https://example.com/tags/blog/</link>
+    <pubDate>Sun, 12 Jan 2025 19:56:34 &#43;0800</pubDate>
     <author>hfnan</author>
-    <guid>https://example.com/tags/distruibuted-training/</guid>
+    <guid>https://example.com/tags/blog/</guid>
     <description><![CDATA[]]></description>
 </item>
 </channel>

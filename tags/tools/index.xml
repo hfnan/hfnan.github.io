@@ -9,15 +9,7 @@
     <pubDate>Mon, 13 Jan 2025 14:09:00 &#43;0800</pubDate>
     <author>hfnan</author>
     <guid>https://example.com/markdown/</guid>
-    <description><![CDATA[]]></description>
-</item>
-<item>
-    <title>使用Hugo构建个人博客</title>
-    <link>https://example.com/%E6%9E%84%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</link>
-    <pubDate>Sun, 12 Jan 2025 19:56:34 &#43;0800</pubDate>
-    <author>hfnan</author>
-    <guid>https://example.com/%E6%9E%84%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</guid>
-    <description><![CDATA[本文简要记录使用Github Pages与Hugo构建个人博客的流程。 1 创建Github Pages Repo 这个步骤比较简单，只需要创建一个名为yournam]]></description>
+    <description><![CDATA[本文介绍Markdown常用语法。 1 基本语法 1.1 标题 将 # 放在标题前来设置标题。# 的数量代表标题的级别。 1.2 强调 **粗体**：粗体 *斜体*：斜体 *]]></description>
 </item>
 </channel>
 </rss>

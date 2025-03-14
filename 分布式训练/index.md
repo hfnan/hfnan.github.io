@@ -35,12 +35,6 @@ $$\boldsymbol{\dfrac{\partial{L}}{\partial{W_l}} = \delta a_l}$$
 
 所以，反向传播计算依赖于前向传播过程中计算并保存的中间层输出。
 
-### 1.X 参考
-
-[2.3. 深度学习——Python数据科学加速](https://scale-py.godaai.org/ch-data-science/deep-learning.html)
-
-[一文弄懂神经网络中的反向传播法——BackPropagation](https://www.cnblogs.com/charlotte77/p/5629865.html)
-
 
 
 ## 2 分布式训练
@@ -89,11 +83,15 @@ $$\boldsymbol{\dfrac{\partial{L}}{\partial{W_l}} = \delta a_l}$$
 
 每个stage包含模型的一部分层或子模块，<u>输入数据的mini-batches被细分成多个micro-batches，每个micro batch在流水线的一个stage上进行计算，然后依次传递到下一个stage。</u>
 
-<img src="../../../static/image-20240716183434132.png" alt="image-20240716183434132" style="zoom:80%;" />
+<img src="/image-20240716183434132.png" alt="image-20240716183434132" style="zoom:80%;" />
 
 
 
-### 2.X 参考
+## X 参考
+
+[2.3. 深度学习——Python数据科学加速](https://scale-py.godaai.org/ch-data-science/deep-learning.html)
+
+[一文弄懂神经网络中的反向传播法——BackPropagation](https://www.cnblogs.com/charlotte77/p/5629865.html)
 
 [理论+实践，带你了解分布式训练](https://www.cnblogs.com/huaweiyun/p/18179719)
 

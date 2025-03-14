@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>装机 - 标签 - Hfnan&#39;s Wiki</title>
+        <link>https://example.com/tags/%E8%A3%85%E6%9C%BA/</link>
+        <description>装机 - 标签 - Hfnan&#39;s Wiki</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 08 Mar 2025 11:00:00 &#43;0800</lastBuildDate><atom:link href="https://example.com/tags/%E8%A3%85%E6%9C%BA/" rel="self" type="application/rss+xml" /><item>
+    <title>人生第一次装机</title>
+    <link>https://example.com/%E4%BA%BA%E7%94%9F%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%A3%85%E6%9C%BA/</link>
+    <pubDate>Sat, 08 Mar 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E4%BA%BA%E7%94%9F%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%A3%85%E6%9C%BA/</guid>
+    <description><![CDATA[0 序言 历时两天，终于把我人生中的第一台主机装好了。这个过程中也走了不少弯路，受了许多累，现在趁着我的大脑还没把装机的过程忘光，在此做一下记录]]></description>
+</item>
+</channel>
+</rss>

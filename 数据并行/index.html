@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>数据并行 - Hfnan&#39;s Wiki</title><meta name="Description" content="..."><meta property="og:title" content="数据并行" />
+<meta property="og:description" content="数据并行的核心思想是：在每个GPU上都拷贝一份完整模型，每个模型副本各自输入一份数据，计算一份梯度，最后对梯度进行累加来更新整体模型。理念并" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://example.com/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/" /><meta property="og:image" content="https://example.com/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-22T11:00:00+08:00" />
+<meta property="article:modified_time" content="2025-01-22T11:00:00+08:00" /><meta property="og:site_name" content="Hfnan&#39;s Wiki" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://example.com/logo.png" /><meta name="twitter:title" content="数据并行"/>
+<meta name="twitter:description" content="数据并行的核心思想是：在每个GPU上都拷贝一份完整模型，每个模型副本各自输入一份数据，计算一份梯度，最后对梯度进行累加来更新整体模型。理念并"/>
+<meta name="application-name" content="Hfnan&#39;s Wiki">
+<meta name="apple-mobile-web-app-title" content="Hfnan&#39;s Wiki"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://example.com/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/" /><link rel="prev" href="https://example.com/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/" /><link rel="next" href="https://example.com/%E4%BA%BA%E7%94%9F%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%A3%85%E6%9C%BA/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "数据并行",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/example.com\/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C\/"
+        },"image": ["https:\/\/example.com\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "distributed training","wordcount":  3480 ,
+        "url": "https:\/\/example.com\/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C\/","datePublished": "2025-01-22T11:00:00+08:00","dateModified": "2025-01-22T11:00:00+08:00","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/example.com\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "hfnan"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Hfnan&#39;s Wiki">Hfnan&#39;s Wiki</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Hfnan&#39;s Wiki">Hfnan&#39;s Wiki</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">数据并行</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>hfnan</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-22">2025-01-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3480 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-数据并行dp">1 数据并行（DP）</a>
+      <ul>
+        <li><a href="#11-整体架构">1.1 整体架构</a></li>
+        <li><a href="#12-参数服务器">1.2 参数服务器</a></li>
+        <li><a href="#13-通信瓶颈与梯度异步更新">1.3 通信瓶颈与梯度异步更新</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-分布式数据并行ddp">2 分布式数据并行（DDP）</a>
+      <ul>
+        <li><a href="#21-ring-all-reduce">2.1 Ring All-Reduce</a>
+          <ul>
+            <li><a href="#reduce-scatter">Reduce-Scatter</a></li>
+            <li><a href="#all-gather">All-Gather</a></li>
+          </ul>
+        </li>
+        <li><a href="#22-ring-all-reduce通信量分析">2.2 Ring All-Reduce通信量分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-zero">3 ZeRO</a>
+      <ul>
+        <li><a href="#31-存储消耗">3.1 存储消耗</a></li>
+        <li><a href="#32-zero-dp">3.2 ZeRO-DP</a>
+          <ul>
+            <li><a href="#p_os">$P_{os}$</a></li>
+            <li><a href="#p_os--g">$P_{os + g}$</a></li>
+            <li><a href="#p_os--g--p">$P_{os + g + p}$</a></li>
+          </ul>
+        </li>
+        <li><a href="#33-zero-r">3.3 ZeRO-R</a>
+          <ul>
+            <li><a href="#activation">Activation</a></li>
+            <li><a href="#buffer">Buffer</a></li>
+            <li><a href="#memory-fragmentation">Memory Fragmentation</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#x-参考">X 参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>数据并行的核心思想是：在每个GPU上都拷贝一份完整模型，每个模型副本各自输入一份数据，计算一份梯度，最后对梯度进行累加来更新整体模型。理念并不复杂，但到了大模型场景，如何处理巨大的存储和GPU之间的通信，就是系统设计要考虑的重点了。</p>
+<h2 id="1-数据并行dp">1 数据并行（DP）</h2>
+<h3 id="11-整体架构">1.1 整体架构</h3>
+<p>是最早的数据并行模式，采用参数服务器（Parameter Server）架构，实际用于单机多卡。</p>
+<p>典型的数据并行流程如下：</p>
+<ol>
+<li><strong>模型复制</strong>：数据并行使用多个计算节点，每个计算节点保存一份相同的完整模型副本。</li>
+<li><strong>数据分割</strong>：将训练数据batch均匀分割成多个mini-batches，每个mini-batch分配给一个计算节点。</li>
+<li><strong>前向和反向计算</strong>：每个计算节点使用其分配到的mini-batch进行前向和反向计算，得到一份梯度。</li>
+<li><strong>梯度聚合</strong>：每个计算节点将自己计算的梯度发送到一个Server节点（一般选择一个计算节点同时作为Server），执行梯度聚合操作。这里的聚合操作一般指梯度累加，也可由用户自定义。</li>
+<li><strong>参数更新</strong>：Server节点完成梯度聚合后，用完整的梯度更新模型参数，再将更新后的参数广播给所有计算节点。</li>
+</ol>
+<p>将梯度聚合再下发的操作，称为All-Reduce。</p>
+<img src="/image-20250122232655336.png" alt="image-20250122232655336" style="zoom:80%;" />
+<h3 id="12-参数服务器">1.2 参数服务器</h3>
+<p>参数服务器（Parameter Server）是一种分布式系统架构，专门用于大规模机器学习任务。</p>
+<p>在该架构中包含两个角色：Worker和Server。Worker充当计算节点负责模型训练，而Server负责梯度聚合和参数更新。在实际应用中，为了尽量减少通信量，一般可选择一个Worker同时作为Server，比如可以把梯度发到GPU0上做聚合。</p>
+<p>为了保持模型一致性，一般有两种方法：</p>
+<ul>
+<li>将模型参数保存在一个集中的节点上，当一个计算节点要进行模型训练时，可从集中节点获取参数，进行模型训练，然后将更新后的模型推送会集中节点。由于所有计算节点都从同一个集中节点获取参数，因此可以保证模型一致性。</li>
+<li>每个计算节点都保存模型参数的副本，因此要定期强制同步模型参数副本。每个计算节点使用自己的训练数据分区来训练本地模型副本。在每个训练迭代后，由于使用不同的输入数据进行训练，存储在不同计算节点上的模型副本可能会有所不同。因此，每一次训练迭代后插入一个全局同步的步骤，这将对不同计算节点上的参数进行平均，以便以完全分布式的方式保证模型的一致性，即All-Reduce范式。</li>
+</ul>
+<h3 id="13-通信瓶颈与梯度异步更新">1.3 通信瓶颈与梯度异步更新</h3>
+<p>DP的框架在实战中有两个主要问题：</p>
+<ul>
+<li><strong>存储开销大</strong>。每块GPU上都保存了一份完整的模型，造成冗余。</li>
+<li><strong>通信开销大</strong>。Server需要和每一个Worker进行梯度传输。当Server和Worker不在一台机器上时，Server的带宽将会成为整个系统的计算效率瓶颈。</li>
+</ul>
+<p><strong>梯度异步更新</strong>要求每个GPU计算完梯度后，无需等待其他GPU更新，立即更新整体权重。并且，每个GPU并不空置等待权重更新的结果，而是直接使用未更新的权重参数进行下一轮mini-batch训练。所以其本质上相当于增加了batch size，在SGD下会减缓模型的收敛速度，并且由于异步会产生复杂的梯度问题。</p>
+<h2 id="2-分布式数据并行ddp">2 分布式数据并行（DDP）</h2>
+<p>分布式数据并行，采用Ring All-Reduce的通信方式，实际中多用于多机场景。</p>
+<h3 id="21-ring-all-reduce">2.1 Ring All-Reduce</h3>
+<p>PS架构中，当worker数量较多时，PS节点的网络带宽将成为系统的瓶颈。</p>
+<p>All-Reduce架构是指不带有参数服务器的分布式集群架构。在该架构中，集群的所有节点都作为worker来执行计算操作，该架构会在每个batch训练完成后，使用All-Reduce算法在所有worker节点间进行模型变量的同步更新。</p>
+<p>传统的同步更新方法（各个GPU卡算好梯度，求和算平均的方式），在融合梯度时，会产生巨大的通信数据量，这种通信压力往往在模型参数量很大时，显得很明显。因此我们需要找到一种方法，来解决同步更新的网络瓶颈问题。其中最具代表性的一种方法就是Ring All-Reduce。</p>
+<p>Ring All Reduce是一种以环状拓扑为基础的通信系统。Ring All-Reduce架构中各个设备都是worker，没有中心节点来聚合所有worker计算的梯度。Ring All-Reduce算法将 device 放置在一个逻辑环路（logical ring）中。每个 device 从上行的device 接收数据，并向下行的 deivce 发送数据，因此可以充分利用每个 device 的上下行带宽。</p>
+<img src="/image-20240728144553839.png" alt="image-20240728144553839" style="zoom:80%;" />
+<p>梯度聚合过程分为两个阶段：</p>
+<ul>
+<li><strong>Reduce-Scatter</strong>：GPU会逐步交换彼此的梯度并聚合，最后每个GPU会包含完成聚合梯度的一部分。</li>
+<li><strong>All-Gather</strong>：GPU会逐步交换彼此不完整的聚合梯度，最后所有GPU都会得到完整的聚合梯度。</li>
+</ul>
+<h4 id="reduce-scatter">Reduce-Scatter</h4>
+<ol>
+<li>每个节点把本设备上的数据分成N块，N是架构中worker的数目。</li>
+<li>在一次传输和接收结束后，在每个节点上累加了其他节点的一个块的数据。这样的数据传输模式直到阶段结束。</li>
+<li>每个节点上都有一个包含最后结果的块，这个块的数据是所有节点相应位置块数据之和。</li>
+</ol>
+<img src="/image-20250123132832614.png" alt="image-20250123132832614" style="zoom:80%;" />
+<h4 id="all-gather">All-Gather</h4>
+<ol>
+<li>All Gather阶段总共包含N-1次数据传输，不同的是，All Gather阶段并不需要将接收到的值进行累加，而是直接使用接收到的块内数值代替原来块中的值。在一次传输后，每个节点含有最终结果的块增加一个。</li>
+<li>继续这个传输过程直到结束，使得每个节点都包含了全部的数据结果。</li>
+</ol>
+<img src="/image-20250123132917272.png" alt="image-20250123132917272" style="zoom:80%;" />
+<h3 id="22-ring-all-reduce通信量分析">2.2 Ring All-Reduce通信量分析</h3>
+<p>假设模型参数大小为 $\Phi$ ，GPU个数为 $N$ 。则梯度大小也为 $\Phi$ ，每个梯度块的大小为 $\frac{\Phi}{N}$ 。对单卡GPU来说（只计算其发送通信量），Reduce-Scatter阶段的通信量为 $(N - 1) \frac{\Phi}{N}$ ，All-Gather阶段的通信量为 $(N - 1) \frac{\Phi}{N}$ 。单卡通信量为 $2(N - 1) \frac{\Phi}{N}$，随着 $N$ 的增大，可以近似为 $2\Phi$ ，全卡总通信量为 $2N\Phi$。</p>
+<p>而对于PS架构，Server承载的通信量为 $N\Phi$，Workers的总通信量为 $N\Phi$ ，全卡通信量也为 $2N\Phi$ 。</p>
+<p>虽然通信量相同，但Ring All-Reduce架构将通信量均衡负载到了每一时刻的每个Worker上，而PS架构的负载集中于Server。</p>
+<h2 id="3-zero">3 ZeRO</h2>
+<h3 id="31-存储消耗">3.1 存储消耗</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/image-20250212130752924.png"
+        data-srcset="/image-20250212130752924.png, /image-20250212130752924.png 1.5x, /image-20250212130752924.png 2x"
+        data-sizes="auto"
+        alt="/image-20250212130752924.png"
+        title="image-20250212130752924" /></p>
+<h3 id="32-zero-dp">3.2 ZeRO-DP</h3>
+<img src="/image-20250207163953095.png" alt="image-20250207163953095" style="zoom:80%;" />
+<h4 id="p_os">$P_{os}$</h4>
+<p>将优化器状态（Optimizer States）分成若干份，每块GPU上各维护一份。</p>
+<p>每个GPU上的进程完成一轮forward和backward后，各算得一份Local梯度。对梯度做All Reduce，得到聚合后梯度G。</p>
+<p>梯度和部分优化器状态更新部分参数，再做All Gather获得完整参数W。</p>
+<h4 id="p_os--g">$P_{os + g}$</h4>
+<p>更进一步，将梯度也拆分，每个GPU各维护一份梯度。</p>
+<p>每个GPU上的进程完成一轮forward和backward后，各算得一份Local梯度。由于GPU只需要维护自己那部分梯度，所以做Reduce Scatter将部分梯度做聚合。</p>
+<p>使用部分梯度和部分优化器状态更新部分参数，再做All Gather获得完整参数W。</p>
+<h4 id="p_os--g--p">$P_{os + g + p}$</h4>
+<p>将参数也切分成若干份，每个GPU上维护一份参数。</p>
+<p>每个GPU进程在forward时对W做All Gather来获得完整参数参与计算。在backward时也对W做All Gather，取到完整的参数W。</p>
+<p>做完backward，算得梯度G。对G做Reduce Scatter来聚合部分梯度。</p>
+<p>使用部分梯度和部分优化器状态更新部分参数，由于只维护部分参数W，无需再进行通讯。</p>
+<p>使用ZeRO2（$P_{os + g}$）时的通信量与普通DP的通信量一致，因为All Reduce就是这么实现的（All Reduce = Reduce Scatter + All Gather）。</p>
+<p>将参数也切分后，会引入额外的通信，属于用通信来换内存。（通信量由$2\Phi$增加到 $3\Phi$ ，增加到1.5倍）</p>
+<h3 id="33-zero-r">3.3 ZeRO-R</h3>
+<h4 id="activation">Activation</h4>
+<p>对Activation的拆分主要用于张量并行（Megatron-LM）。在张量并行中，尽管将参数拆分到不同的GPU上，但输入向量（Activation）还是要完整地在每个GPU上复制一份。ZeRO采用与前面类似的方式，将Activation做拆分，每个GPU上维护一份Activation。</p>
+<p>在forward时，通过All Gather获得完整的Activation来参与计算。计算完成后，TP节点之间通过All Reduce来聚合输出，同样，由于每个GPU上只需要保存部分Activation，可以使用Reduce Scatter来聚合。</p>
+<p>在backward时，做All Gather获得完整的Activation来进行计算。</p>
+<h4 id="buffer">Buffer</h4>
+<p>设置合适的、固定大小的buffer。</p>
+<h4 id="memory-fragmentation">Memory Fragmentation</h4>
+<p>根据张量的生命周期管理和重整内存。</p>
+<h2 id="x-参考">X 参考</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/617133971" target="_blank" rel="noopener noreffer ">图解大模型训练之：数据并行上篇(DP, DDP与ZeRO)</a></p>
+<p><a href="https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-li_mu.pdf" target="_blank" rel="noopener noreffer ">Scaling Distributed Machine Learning with the Parameter Server</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/618865052" target="_blank" rel="noopener noreffer ">图解大模型训练之：数据并行下篇( DeepSpeed ZeRO，零冗余优化)</a></p>
+<p><a href="https://arxiv.org/abs/1910.02054" target="_blank" rel="noopener noreffer ">ZeRO: Memory Optimizations Toward Training Trillion Parameter Models</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2025-01-22</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/distributed-training/">Distributed Training</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/" class="prev" rel="prev" title="张量并行"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>张量并行</a>
+            <a href="/%E4%BA%BA%E7%94%9F%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%A3%85%E6%9C%BA/" class="next" rel="next" title="人生第一次装机">人生第一次装机<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="utterances" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">utterances</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">hfnan</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"utterances":{"darkTheme":"github-dark","issueTerm":"pathname","label":"","lightTheme":"github-light","repo":""}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

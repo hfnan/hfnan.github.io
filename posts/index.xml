@@ -3,13 +3,45 @@
         <title>所有文章 - Hfnan&#39;s Wiki</title>
         <link>https://example.com/posts/</link>
         <description>所有文章 | Hfnan&#39;s Wiki</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 13 Jan 2025 14:09:00 &#43;0800</lastBuildDate><atom:link href="https://example.com/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 08 Mar 2025 11:00:00 &#43;0800</lastBuildDate><atom:link href="https://example.com/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>人生第一次装机</title>
+    <link>https://example.com/%E4%BA%BA%E7%94%9F%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%A3%85%E6%9C%BA/</link>
+    <pubDate>Sat, 08 Mar 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E4%BA%BA%E7%94%9F%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%A3%85%E6%9C%BA/</guid>
+    <description><![CDATA[0 序言 历时两天，终于把我人生中的第一台主机装好了。这个过程中也走了不少弯路，受了许多累，现在趁着我的大脑还没把装机的过程忘光，在此做一下记录]]></description>
+</item>
+<item>
+    <title>数据并行</title>
+    <link>https://example.com/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/</link>
+    <pubDate>Wed, 22 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/</guid>
+    <description><![CDATA[数据并行的核心思想是：在每个GPU上都拷贝一份完整模型，每个模型副本各自输入一份数据，计算一份梯度，最后对梯度进行累加来更新整体模型。理念并]]></description>
+</item>
+<item>
+    <title>张量并行</title>
+    <link>https://example.com/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/</link>
+    <pubDate>Wed, 22 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/</guid>
+    <description><![CDATA[1 Megatron-LM 张量并行是由Nvidia团队在Megatron-LM一文中提出的，针对Transformer模型训练的模型并行（文中称之为Model Pa]]></description>
+</item>
+<item>
+    <title>流水线并行</title>
+    <link>https://example.com/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/</link>
+    <pubDate>Wed, 15 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/</guid>
+    <description><![CDATA[优化目标 做分布式训练的总体目标是什么？ 能训练更大的模型。 理想状况下，模型的大小和GPU的数量成线性关系。即GPU量提升x倍，模型大小也能提升]]></description>
+</item>
+<item>
     <title>Markdown</title>
     <link>https://example.com/markdown/</link>
     <pubDate>Mon, 13 Jan 2025 14:09:00 &#43;0800</pubDate>
     <author>hfnan</author>
     <guid>https://example.com/markdown/</guid>
-    <description><![CDATA[]]></description>
+    <description><![CDATA[本文介绍Markdown常用语法。 1 基本语法 1.1 标题 将 # 放在标题前来设置标题。# 的数量代表标题的级别。 1.2 强调 **粗体**：粗体 *斜体*：斜体 *]]></description>
 </item>
 <item>
     <title>分布式训练</title>

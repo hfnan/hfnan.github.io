@@ -56,6 +56,22 @@
 
 
 
+## 4 在Markdown里引用本地图片
+
+1.   将本地图片存放在博客根目录的 `static` 目录中。
+
+2.   在markdown文件中按照如下格式引用图片。假设要引用路径为 `static/img.png` 的图片：
+
+     ```markdown
+     ![](/img.png)
+     ```
+
+3.   执行 `hugo` 并提交
+
+
+
+
+
 ## X 参考
 
 [Stilig's blog](https://stilig.me/)

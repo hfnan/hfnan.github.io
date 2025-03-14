@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>流水线并行 - Hfnan&#39;s Wiki</title><meta name="Description" content="..."><meta property="og:title" content="流水线并行" />
+<meta property="og:description" content="优化目标 做分布式训练的总体目标是什么？ 能训练更大的模型。 理想状况下，模型的大小和GPU的数量成线性关系。即GPU量提升x倍，模型大小也能提升" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://example.com/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/" /><meta property="og:image" content="https://example.com/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-15T11:00:00+08:00" />
+<meta property="article:modified_time" content="2025-01-15T11:00:00+08:00" /><meta property="og:site_name" content="Hfnan&#39;s Wiki" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://example.com/logo.png" /><meta name="twitter:title" content="流水线并行"/>
+<meta name="twitter:description" content="优化目标 做分布式训练的总体目标是什么？ 能训练更大的模型。 理想状况下，模型的大小和GPU的数量成线性关系。即GPU量提升x倍，模型大小也能提升"/>
+<meta name="application-name" content="Hfnan&#39;s Wiki">
+<meta name="apple-mobile-web-app-title" content="Hfnan&#39;s Wiki"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://example.com/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/" /><link rel="prev" href="https://example.com/markdown/" /><link rel="next" href="https://example.com/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "流水线并行",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/example.com\/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C\/"
+        },"image": ["https:\/\/example.com\/images\/Apple-Devices-Preview.png"],"genre": "posts","keywords": "distributed training","wordcount":  2851 ,
+        "url": "https:\/\/example.com\/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C\/","datePublished": "2025-01-15T11:00:00+08:00","dateModified": "2025-01-15T11:00:00+08:00","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "https:\/\/example.com\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "hfnan"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Hfnan&#39;s Wiki">Hfnan&#39;s Wiki</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Hfnan&#39;s Wiki">Hfnan&#39;s Wiki</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">流水线并行</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>hfnan</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2025-01-15">2025-01-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 2851 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#优化目标">优化目标</a></li>
+    <li><a href="#1-朴素的流水线并行">1 朴素的流水线并行</a></li>
+    <li><a href="#2-gpipe">2 GPipe</a>
+      <ul>
+        <li><a href="#21-切分micro-batch">2.1 切分micro-batch</a></li>
+        <li><a href="#22-re-materialization">2.2 re-materialization</a></li>
+        <li><a href="#23-gpipe流水线存在的问题">2.3 GPipe流水线存在的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-pipedream">3 PipeDream</a>
+      <ul>
+        <li><a href="#31-1f1b">3.1 1F1B</a></li>
+        <li><a href="#32-weight-stashing-和-vertical-sync">3.2 Weight Stashing 和 Vertical Sync</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-interleaved-1f1b">4 Interleaved 1F1B</a></li>
+    <li><a href="#x-参考">X 参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="优化目标">优化目标</h2>
+<p>做分布式训练的总体目标是什么？</p>
+<ul>
+<li>
+<p><strong>能训练更大的模型。</strong> 理想状况下，模型的大小和GPU的数量成线性关系。即GPU量提升x倍，模型大小也能提升x倍。</p>
+</li>
+<li>
+<p><strong>能更快地训练模型。</strong> 理想状况下，训练的速度和GPU的数量成线性关系。即GPU量提升x倍，训练速度也能提升x倍。</p>
+</li>
+</ul>
+<p>这是目标，也是难点。难点在于：</p>
+<ul>
+<li>训练更大的模型时，每块GPU里不仅要存模型参数，还要存中间结果（用来做Backward）。而更大的模型意味着需要更多的训练数据，进一步提高了中间结果的大小。加重了每块GPU的内存压力。我们将在下文详细分析这一点。（<strong>对应着GPU中的内存限制</strong>）</li>
+<li>网络通讯开销。数据在卡之间进行传输，是需要通讯时间的。不做设计的话，这个通讯时间可能会抹平多卡本身带来的训练速度提升。（<strong>对应着GPU间的带宽限制</strong>）</li>
+</ul>
+<h2 id="1-朴素的流水线并行">1 朴素的流水线并行</h2>
+<p>当你有一个单卡装不下的大模型时，一个直接的解决办法是，把模型隔成不同的层，每一层都放到一块GPU上。此时，模型做一轮forward和backward的过程如下：</p>
+<img src="/image-20250115115022087.png" alt="image-20250115115022087" style="zoom: 67%;" />
+<p>其中下标表示batch编号，这里只有一个batch，因此下标都是0。每一行表示一个GPU，每一列表示timestep。</p>
+<p>这张图的含义是：我在GPU0上做完一次forward，然后将GPU0上最后一层的输入传给GPU1，继续做forward，直到四块GPU都做完forward后，我再依次做backward。等把四块GPU上的backward全部做完后，最后一个时刻我统一更新每一层的梯度。</p>
+<p>这样做确实能训更大的模型了，但也带来了两个问题：</p>
+<ul>
+<li><strong>GPU利用度不够。</strong></li>
+<li><strong>中间结果占据大量内存。</strong></li>
+</ul>
+<h2 id="2-gpipe">2 GPipe</h2>
+<h3 id="21-切分micro-batch">2.1 切分micro-batch</h3>
+<p>将输入的数据mini-batch再细分为micro-batch，在GPU间流水训练，以减少流水线bubble的占比。</p>
+<img src="/image-20250115205300369.png" alt="image-20250115205300369" style="zoom:67%;" />
+<p>图中，每个函数的第一个下标表示GPU编号，第二个下标表示micro-batch编号。若micro-batch的数量为$\boldsymbol{M}$，使用GPU的数量为$\boldsymbol{K}$，则GPipe通过实验证明，当 $\boldsymbol{M \ge 4 \times K}$ 时，bubble产生的空转时间占比对最终训练时长的影响是微小的，可以忽略不计。</p>
+<p>在前向计算中，$\boldsymbol{M}$ 个micro-batch流水地通过$\boldsymbol{K}$ 个GPU。在反向计算中，每个micro-batch的梯度基于forward的模型参数来计算，在所有micro-batch的梯度计算完成后，将梯度累加起来并用于更新所有GPU上的模型参数。</p>
+<h3 id="22-re-materialization">2.2 re-materialization</h3>
+<p>为了减少激活内存占用，GPipe在forward过程中，每个GPU只保存当前stage最后的输出，而不保存stage内部层间的activation。在backward时， 每个GPU再重新计算一遍forward来得到梯度。</p>
+<p>采用这种方法，对于层数为$\boldsymbol{L}$，mini-batch size为$\boldsymbol{N}$，micro-batch的数量为$\boldsymbol{M}$，使用GPU的数量为$\boldsymbol{K}$ 的GPipe流水线并行来说，峰值显存占用从$\boldsymbol{O(N \times L)}$ 减小到$\boldsymbol{O(N + \frac{L}{K} \times \frac{N}{M})}$ 。</p>
+<h3 id="23-gpipe流水线存在的问题">2.3 GPipe流水线存在的问题</h3>
+<ul>
+<li>反向计算在全部前向计算完成后才开始，造成bubble时间。</li>
+<li>需要缓存$\boldsymbol{M}$ 份activation，显存占用较高。</li>
+</ul>
+<h2 id="3-pipedream">3 PipeDream</h2>
+<h3 id="31-1f1b">3.1 1F1B</h3>
+<p>PipeDream的1F1B策略既可以减少bubble，又能缓解激活显存占用问题。</p>
+<p>在开始阶段（startup phase），输入若干micro-batch（micro-batch的数量是在稳定阶段下保持流水线满负荷所允许的最小micro-batch数量），进行前向计算。当最后一个stage完成一个micro-batch的前向计算后，就立即进行该micro-batch的反向计算，随后交替地执行micro-batch的前向和反向计算。不是等待所有micro-batches全部执行完前向计算后再执行反向计算，而是在一个micro-batch前向计算完成后就立即执行反向计算，这样就可以尽早地开始执行反向计算，从而减少每个activation在显存中的保留时间。</p>
+<p>在稳定阶段（steady phase），每个GPU交替执行前向和反向计算，这样使得每个GPU上都会有一个micro-batch正在处理，没有GPU空闲，从而保证获得资源的高利用率。</p>
+<img src="/image-20250116135838009.png" alt="image-20250116135838009" style="zoom: 80%;" />
+<p>在通信方面，与GPipe的同步通信不同，PipeDream各个stage之间的通信与forward和backward计算是异步的，可以有效进行计算和通信重叠。如下图所示，当一个stage前向计算完成后，将activation传给后一个stage的通信与下一个time step进行的反向计算重叠。当反向计算完成后，将gradient传给前一个stage的通信与下一个time step的前向计算重叠。</p>
+<img src="/image-20250122195414379.png" alt="image-20250122195414379" style="zoom:80%;" />
+<p>PipeDream的权重更新是在每个mini-batch完成一次forward和backward计算后立即更新的。但这种流水线会导致forward和backward使用的参数版本不一致。比如上面流水线的图，对于Machine 1（stage 1）mini-batch 5 的前向计算是在mini-batch 1完成计算后更新的参数，而mini-batch 5的反向计算是在mini-batch 2、3、4更新后的参数。PipeDream提出了两种方法解决参数不一致的问题。</p>
+<h3 id="32-weight-stashing-和-vertical-sync">3.2 Weight Stashing 和 Vertical Sync</h3>
+<p><strong>Weight stashing</strong> 为每个活跃的mini-batch维护了一个权重版本。当一个mini-batch进入流水线执行前向计算时，每个stage使用最新版本的权重进行计算，并将该版本权重作为该mini-batch的中间状态的一部分保存。当执行该mini-batch的反向计算时，使用同版本的权重来计算梯度。Weight stashing 确保在一个stage的计算中，一个mini-batch的前向和后向计算使用的是相同版本的权重，但并不对不同stage上使用权重的一致性有保证。</p>
+<p><strong>Vertical Sync</strong> 确保了跨stage的权重一致性。每个mini-batch在所有stage上的前向和反向计算均使用它进入流水线时的最新权重，比如mini-batch 5 的全程计算均使用mini-batch 1 训练更新后的权重参数。</p>
+<p>Weight stashing 对有效训练有很大作用，而根据PipeDream的实验，是否使用Vertical Sync 对训练的影响可以忽略不计。</p>
+<h2 id="4-interleaved-1f1b">4 Interleaved 1F1B</h2>
+<p>Interleaved 1F1B使用了Virtual Pipeline Parallelism的方法，每个流水线阶段被进一步细分为更多的虚拟阶段（Virtual stage），每个实际GPU负责处理多个虚拟阶段。micro-batches在虚拟阶段中计算。</p>
+<img src="/image-20250123125733581.png" alt="image-20250123125733581" style="zoom:80%;" />
+<h2 id="x-参考">X 参考</h2>
+<p><a href="https://zhuanlan.zhihu.com/p/613196255" target="_blank" rel="noopener noreffer ">图解大模型训练之：流水线并行（Pipeline Parallelism），以Gpipe为例</a></p>
+<p><a href="https://arxiv.org/abs/1811.06965" target="_blank" rel="noopener noreffer ">GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism</a></p>
+<p><a href="https://arxiv.org/abs/1806.03377" target="_blank" rel="noopener noreffer ">PipeDream: Fast and Efficient Pipeline Parallel DNN Training</a></p>
+<p><a href="https://www.cnblogs.com/rossiXYZ/p/15272831.html#13-1f1b%E6%B5%81%E6%B0%B4%E7%BA%BF" target="_blank" rel="noopener noreffer ">[源码解析] 深度学习流水线并行 PipeDream(6)&mdash; 1F1B策略</a></p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2025-01-15</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/distributed-training/">Distributed Training</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/markdown/" class="prev" rel="prev" title="Markdown"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>Markdown</a>
+            <a href="/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/" class="next" rel="next" title="张量并行">张量并行<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="utterances" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">utterances</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">hfnan</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/algoliasearch@4.13.1/dist/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":50},"comment":{"utterances":{"darkTheme":"github-dark","issueTerm":"pathname","label":"","lightTheme":"github-light","repo":""}},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":30,"type":"algolia"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

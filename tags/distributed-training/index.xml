@@ -1,0 +1,39 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Distributed Training - 标签 - Hfnan&#39;s Wiki</title>
+        <link>https://example.com/tags/distributed-training/</link>
+        <description>Distributed Training - 标签 - Hfnan&#39;s Wiki</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 22 Jan 2025 11:00:00 &#43;0800</lastBuildDate><atom:link href="https://example.com/tags/distributed-training/" rel="self" type="application/rss+xml" /><item>
+    <title>数据并行</title>
+    <link>https://example.com/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/</link>
+    <pubDate>Wed, 22 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C/</guid>
+    <description><![CDATA[数据并行的核心思想是：在每个GPU上都拷贝一份完整模型，每个模型副本各自输入一份数据，计算一份梯度，最后对梯度进行累加来更新整体模型。理念并]]></description>
+</item>
+<item>
+    <title>张量并行</title>
+    <link>https://example.com/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/</link>
+    <pubDate>Wed, 22 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C/</guid>
+    <description><![CDATA[1 Megatron-LM 张量并行是由Nvidia团队在Megatron-LM一文中提出的，针对Transformer模型训练的模型并行（文中称之为Model Pa]]></description>
+</item>
+<item>
+    <title>流水线并行</title>
+    <link>https://example.com/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/</link>
+    <pubDate>Wed, 15 Jan 2025 11:00:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C/</guid>
+    <description><![CDATA[优化目标 做分布式训练的总体目标是什么？ 能训练更大的模型。 理想状况下，模型的大小和GPU的数量成线性关系。即GPU量提升x倍，模型大小也能提升]]></description>
+</item>
+<item>
+    <title>分布式训练</title>
+    <link>https://example.com/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/</link>
+    <pubDate>Mon, 13 Jan 2025 12:38:00 &#43;0800</pubDate>
+    <author>hfnan</author>
+    <guid>https://example.com/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/</guid>
+    <description><![CDATA[1 深度神经网络训练过程 1.1 深度神经网络 深度神经网络由若干层堆叠而成，每层由如下式子计算： $$\boldsymbol{z = W \cdot x + b}$$ $$\boldsymbol{a} = f(\boldsymbol{z})$$ 其中，$\boldsymbol{x]]></description>
+</item>
+</channel>
+</rss>
